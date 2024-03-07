@@ -1,85 +1,47 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import qrcode from "qrcode";
 import ejs from "ejs";
 import path from "path";
+import logger from "./logger";
+import { ProductRequest, validateProducts } from "./schema/request.schema";
+
 
 const app = express();
 
+app.use(express.json());
+
 const template = path.join(__dirname, "resources", "template.html");
 
-type Product = {
-  selling_session_proudct_id: number;
-  product_name: string;
-  price: number;
-  qrCode?: string;
-};
+async function generateQrCode(product: ProductRequest): Promise<string> {
+  const productJson = JSON.stringify(product);
+  const qrCode = await qrcode.toDataURL(productJson, {
+    errorCorrectionLevel: "L",
+  });
 
-const mockData: Product[] = [
-  {
-    selling_session_proudct_id: 1,
-    product_name: "Naranja",
-    price: 10,
-  },
-  {
-    selling_session_proudct_id: 2,
-    product_name: "Naranja",
-    price: 10,
-  },
-  {
-    selling_session_proudct_id: 3,
-    product_name: "Naranja",
-    price: 10,
-  },
-  {
-    selling_session_proudct_id: 4,
-    product_name: "Naranja",
-    price: 10,
-  },
-  {
-    selling_session_proudct_id: 5,
-    product_name: "Manzana",
-    price: 10,
-  },
-  {
-    selling_session_proudct_id: 6,
-    product_name: "Manzana",
-    price: 10,
-  },
-];
+  return qrCode;
+}
 
-const generateQRCode = async (
-  product: Product
-): Promise<string | undefined> => {
+app.post("/qr", validateProducts, async (req: Request, res: Response) => {
   try {
-    const productJson = JSON.stringify(product);
-    // Esto regresa un B64
-    const qrDataUri = await qrcode.toDataURL(productJson, {
-      errorCorrectionLevel: "H",
-    });
+    const products: ProductRequest[] = req.body.products;
 
-    return qrDataUri;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-app.get("/", async (req, res) => {
-  const data = mockData;
-
-  for (const product of data) {
-    const qrCode = await generateQRCode(product);
-    product.qrCode = qrCode;
-  }
-
-  ejs.renderFile(template, {data}, (err, html) => {
-    if (err) {
-      console.log(err);
-      return;
+    for (const product of products) {
+      const qrCode = await generateQrCode(product);
+      product.qrCode = qrCode;
     }
-    res.send(html);
-  })
+
+    ejs.renderFile(template, { data: products }, (err, html) => {
+      if (err) {
+        logger.error(err);
+        return;
+      }
+      res.send(html);
+    });
+  } catch (err) {
+    logger.error(err);
+  }
 });
 
 app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  logger.info("Server is running on port 3000");
 });
