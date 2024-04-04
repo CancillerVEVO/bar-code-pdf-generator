@@ -5,6 +5,7 @@ const ProductSchema = z.object({
   selling_session_product_id: z.number(),
   product_name: z.string(),
   price: z.number(),
+  selling_session_id: z.number(),
   qrCode: z.string().optional(),
 });
 

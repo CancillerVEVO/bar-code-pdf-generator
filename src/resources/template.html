@@ -27,7 +27,8 @@
     <div class="grid-container">
         <% data.forEach(product => { %>
             <div class="grid-item">
-                <p>id: <%= product.selling_session_product_id %></p>
+                <p>Selling Session ID: <%= product.selling_session_id %></p>
+                <p>Product ID: <%= product.selling_session_product_id %></p>
                 <p>Nombre: <%= product.product_name %></p>
                 <p>Price: <%= product.price %></p>
                 <img src="<%= product.qrCode %>" alt="QR Code">

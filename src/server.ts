@@ -5,7 +5,6 @@ import path from "path";
 import logger from "./logger";
 import { ProductRequest, validateProducts } from "./schema/request.schema";
 
-
 const app = express();
 
 app.use(express.json());
@@ -30,15 +29,19 @@ app.post("/qr", validateProducts, async (req: Request, res: Response) => {
       product.qrCode = qrCode;
     }
 
-    ejs.renderFile(template, { data: products }, (err, html) => {
+    ejs.renderFile(template, { data: products }, async (err, html) => {
       if (err) {
         logger.error(err);
+        res.status(500).send("Internal server error");
         return;
       }
-      res.send(html);
+
+     res.send(html);
+
     });
   } catch (err) {
     logger.error(err);
+    res.status(500).send("Internal server error");
   }
 });
 
