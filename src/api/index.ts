@@ -8,6 +8,7 @@ import { ProductRequest, validateProducts } from "./schema/request.schema";
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const template = path.join(__dirname, "resources", "template.html");
 
