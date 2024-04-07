@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantilla</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid #000;
+        }
+        .grid-item {
+            padding: 10px;
+            text-align: center;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <% data.forEach(product => { %>
+            <div class="grid-item">
+                <p>Selling Session ID: <%= product.selling_session_id %></p>
+                <p>Product ID: <%= product.selling_session_product_id %></p>
+                <p>Nombre: <%= product.product_name %></p>
+                <p>Price: <%= product.price %></p>
+                <img src="<%= product.qrCode %>" alt="QR Code">
+            </div>
+        <% }); %>
+    </div>
+</body>
+</html>

@@ -20,8 +20,13 @@ async function generateQrCode(product: ProductRequest): Promise<string> {
   return qrCode;
 }
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("I'm online!");
+});
+
 app.post("/qr", validateProducts, async (req: Request, res: Response) => {
   try {
+    logger.info("/qr");
     const products: ProductRequest[] = req.body.products;
 
     for (const product of products) {
@@ -36,8 +41,7 @@ app.post("/qr", validateProducts, async (req: Request, res: Response) => {
         return;
       }
 
-     res.send(html);
-
+      res.send(html);
     });
   } catch (err) {
     logger.error(err);
